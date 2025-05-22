@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Compress and optimize your images online for faster websites and reduced storage costs. Choose compression levels and get optimized results instantly." />
+  <meta name="keywords" content="image compression, online image optimizer, reduce image size, compress jpg, compress png" />
+  <meta name="author" content="XAVIORN Tools" />
+  <title>Online Image Compression Tool - Optimize Images for Web</title>
+
+  <style>
+    :root {
+      --primary-color: #1e90ff;
+      --background-color: #f0f2f5;
+      --card-background: #ffffff;
+      --text-color: #333;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--background-color);
+      color: var(--text-color);
+    }
+
+    header, footer {
+      background: var(--primary-color);
+      color: #fff;
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: var(--card-background);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .ad-space {
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    input[type=file], input[type=range], button {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.75rem 0;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      height: 6px;
+      background: var(--primary-color);
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0077e6;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1rem;
+    }
+
+    img.preview {
+      max-width: 100%;
+      height: auto;
+      margin-top: 1rem;
+      border-radius: 8px;
+    }
+
+    a#downloadLink {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+
+      h2 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Online Image Compression Tool</h1>
+    <p>Compress and optimize images easily with customizable compression levels</p>
+  </header>
+
+  <div class="container">
+    <h2>Select Image and Compression Level</h2>
+    <input type="file" id="imageInput" accept="image/*" />
+    <label for="compressionRange">Compression Level: <span id="compressionValue">70</span>%</label>
+    <input type="range" id="compressionRange" min="10" max="100" value="70" />
+    <button id="compressBtn">Compress Image</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <img id="preview" class="preview" alt="Compressed Preview" />
+    <a id="downloadLink" style="display:none;" download="compressed-image.jpg">Download Compressed Image</a>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 XAVIORN Tools. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const imageInput = document.getElementById("imageInput");
+      const compressionRange = document.getElementById("compressionRange");
+      const compressionValue = document.getElementById("compressionValue");
+      const preview = document.getElementById("preview");
+      const canvas = document.getElementById("canvas");
+      const downloadLink = document.getElementById("downloadLink");
+      const compressBtn = document.getElementById("compressBtn");
+
+      compressionRange.addEventListener("input", () => {
+        compressionValue.textContent = compressionRange.value;
+      });
+
+      compressBtn.addEventListener("click", () => {
+        const file = imageInput.files[0];
+        if (!file) {
+          alert("Please select an image file.");
+          return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const img = new Image();
+          img.onload = function () {
+            try {
+              canvas.width = img.width;
+              canvas.height = img.height;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0);
+
+              const quality = parseInt(compressionRange.value) / 100;
+              canvas.toBlob(
+                function (blob) {
+                  if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    preview.src = url;
+                    downloadLink.href = url;
+                    downloadLink.style.display = "inline-block";
+                    downloadLink.textContent = "Download Compressed Image";
+                  } else {
+                    alert("Compression failed. Please try a different image.");
+                  }
+                },
+                "image/jpeg",
+                quality
+              );
+            } catch (err) {
+              console.error("Compression error:", err);
+              alert("An error occurred while compressing the image.");
+            }
+          };
+          img.onerror = function () {
+            alert("Failed to load the image file.");
+          };
+          img.src = e.target.result;
+        };
+
+        reader.onerror = function () {
+          alert("Could not read the image file.");
+        };
+
+        reader.readAsDataURL(file);
+      });
+    });
+  </script>
+</body>
+</html>
